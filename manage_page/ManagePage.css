@@ -1,0 +1,462 @@
+/* ========== Word Note – Full Page (Refined UI) ========== */
+/* Design goals:
+   - Full-page scroll (không scroll riêng trong ul)
+   - Nhẹ mắt, nhiều khoảng thở, card trắng nổi trên nền xám nhạt
+   - Nút và input đồng bộ, radius mềm, shadow tinh tế
+   - Tương thích board.js (giữ nguyên class & cấu trúc)
+   - Hỗ trợ dark mode + toggle thủ công (body.theme-dark)
+*/
+
+:root {
+    --bg: #f6f7fb;
+    --panel: #ffffff;
+    --text: #1f2532;
+    --muted: #6b7280;
+    --border: #e5e7eb;
+    --primary: #2563eb;
+    --primary-600: #1d4ed8;
+    --primary-700: #1842b8;
+    --radius: 12px;
+    --radius-sm: 10px;
+    --shadow: 0 10px 30px rgba(0, 0, 0, .06), 0 2px 10px rgba(0, 0, 0, .04);
+    --shadow-soft: 0 6px 18px rgba(0, 0, 0, .05);
+    --focus: 0 0 0 3px rgba(37, 99, 235, .18);
+    --card-pad: 14px;
+    --gap: 12px;
+    --fs: 14px;
+    --fs-sm: 12.5px;
+}
+
+/* Dark mặc định theo hệ thống (bị override nếu có body.theme-dark) */
+@media (prefers-color-scheme: dark) {
+    :root {
+        --bg: #0f172a;
+        --panel: #0b1221;
+        --text: #e5e7eb;
+        --muted: #9aa3b2;
+        --border: #1e293b;
+        --shadow: 0 10px 30px rgba(0, 0, 0, .35), 0 2px 10px rgba(0, 0, 0, .3);
+        --shadow-soft: 0 6px 18px rgba(0, 0, 0, .28);
+    }
+}
+
+body.theme-light {
+    --bg: #f6f7fb;
+    --panel: #ffffff;
+    --text: #1f2532;
+    --muted: #6b7280;
+    --border: #e5e7eb;
+    --shadow: 0 10px 30px rgba(0, 0, 0, .06), 0 2px 10px rgba(0, 0, 0, .04);
+    --shadow-soft: 0 6px 18px rgba(0, 0, 0, .05);
+}
+
+/* ===== Reset ===== */
+* {
+    box-sizing: border-box;
+}
+
+html,
+body {
+    height: 100%;
+}
+
+html {
+    scroll-behavior: smooth;
+}
+
+body {
+    margin: 0;
+    background: var(--bg);
+    color: var(--text);
+    font: var(--fs)/1.55 system-ui, -apple-system, Segoe UI, Roboto, sans-serif;
+    display: flex;
+    flex-direction: column;
+    gap: var(--gap);
+    padding: 18px;
+}
+
+/* ===== Header ===== */
+.header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    background: var(--panel);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 10px 14px;
+    box-shadow: var(--shadow-soft);
+}
+
+.header h1 {
+    margin: 0;
+    font-size: 18px;
+    letter-spacing: .2px;
+}
+
+.header .to-popup {
+    font-size: 13px;
+    color: var(--primary);
+    text-decoration: none;
+    padding: 6px 10px;
+    border-radius: 8px;
+    transition: background .15s;
+}
+
+.header .to-popup:hover {
+    background: rgba(37, 99, 235, .08);
+}
+
+/* ===== Theme toggle button ===== */
+.icon-btn {
+    border: 1px solid var(--border);
+    background: var(--panel);
+    color: var(--text);
+    padding: 6px 10px;
+    border-radius: 10px;
+    font-size: 14px;
+    box-shadow: var(--shadow-soft);
+    cursor: pointer;
+    transition: transform .06s ease, box-shadow .15s, background .15s, border-color .15s;
+}
+
+.icon-btn:hover {
+    transform: translateY(-1px);
+    box-shadow: var(--shadow-soft);
+}
+
+.icon-btn:active {
+    transform: translateY(0);
+}
+
+/* ===== Toolbar ===== */
+.toolbar {
+    display: grid;
+    grid-template-columns: 1fr 160px 200px;
+    gap: var(--gap);
+    align-items: center;
+    background: var(--panel);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: var(--card-pad);
+    box-shadow: var(--shadow-soft);
+}
+
+input[type="text"],
+.toolbar select,
+button {
+    font-size: var(--fs);
+    padding: 9px 12px;
+    border-radius: var(--radius-sm);
+    border: 1px solid var(--border);
+    background: var(--panel);
+    color: var(--text);
+    transition: box-shadow .15s, border-color .15s, background .15s, transform .06s ease;
+}
+
+input[type="text"]:focus,
+.toolbar select:focus {
+    outline: none;
+    border-color: var(--primary);
+    box-shadow: var(--focus);
+}
+
+button {
+    cursor: pointer;
+    user-select: none;
+}
+
+button:hover {
+    transform: translateY(-1px);
+    box-shadow: var(--shadow-soft);
+}
+
+button:active {
+    transform: translateY(0);
+    box-shadow: none;
+}
+
+/* Action buttons row */
+.actions {
+    grid-column: 1 / -1;
+    display: flex;
+    justify-content: flex-end;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-top: 2px;
+}
+
+/* Primary-looking buttons (Export/Import/Add) – optional accent */
+/* Make only the Open Quiz button visually primary; keep other buttons (Add, Export, Import, Clear, remove-one) neutral */
+#open-quiz {
+    border-color: color-mix(in oklab, var(--primary) 36%, #000 0%);
+    background: color-mix(in oklab, var(--primary) 6%, var(--panel) 94%);
+    font-weight: 700;
+}
+
+#open-quiz:hover {
+    border-color: var(--primary);
+    background: color-mix(in oklab, var(--primary) 12%, var(--panel) 88%);
+    box-shadow: var(--shadow-soft);
+    transform: translateY(-1px);
+}
+
+/* ===== List container (full page scroll) ===== */
+ul {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    /* Không đặt overflow ở đây để scroll theo toàn trang */
+    background: var(--panel);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    box-shadow: var(--shadow);
+    padding: 8px 12px;
+}
+
+/* ===== Item ===== */
+li.item {
+    display: grid;
+    grid-template-columns: 26% 18% 1fr auto;
+    gap: 10px;
+    align-items: center;
+    padding: 12px 2px;
+    border-bottom: 1px dashed color-mix(in oklab, var(--border) 85%, #000 15%);
+}
+
+li.item:last-child {
+    border-bottom: 0;
+}
+
+.word-input,
+.vi-input,
+.cat-select {
+    width: 100%;
+    padding: 9px 10px;
+    border-radius: 10px;
+    border: 1px solid var(--border);
+    background: var(--panel);
+    color: var(--text);
+    font-size: var(--fs);
+    transition: border-color .15s, box-shadow .15s, transform .06s;
+}
+
+.word-input {
+    text-align: center;
+    font-weight: 650;
+    letter-spacing: .2px;
+}
+
+.word-input:focus,
+.vi-input:focus,
+.cat-select:focus {
+    outline: none;
+    border-color: var(--primary);
+    box-shadow: var(--focus);
+}
+
+.remove-one {
+    padding: 7px 10px;
+    font-size: var(--fs-sm);
+    border-radius: 10px;
+    border: 1px solid var(--border);
+    background: var(--panel);
+    color: var(--text);
+    white-space: nowrap;
+}
+
+.remove-one:hover {
+    background: color-mix(in oklab, var(--panel) 88%, #000 12%);
+}
+
+.remove-one:active {
+    transform: translateY(1px);
+}
+
+/* Meta (source + time) */
+.meta-row {
+    grid-column: 1 / -1;
+}
+
+.meta {
+    color: var(--muted);
+    font-size: 12.5px;
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+}
+
+.meta a {
+    color: var(--primary);
+    text-decoration: none;
+}
+
+.meta a:hover {
+    text-decoration: underline;
+}
+
+/* ===== Footer ===== */
+footer {
+    border-top: 1px solid var(--border);
+    padding: 10px 0 2px;
+    text-align: center;
+    color: var(--muted);
+    font-size: 12.5px;
+}
+
+footer .footer-credits {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    margin-top: 6px;
+}
+
+footer .footer-credits img {
+    width: 18px;
+    height: 18px;
+    object-fit: contain;
+    filter: drop-shadow(0 1px 2px rgba(0, 0, 0, .08));
+}
+
+/* ===== Category coloring (sáng) ===== */
+.cat-select {
+    appearance: none;
+    text-align: center;
+    text-align-last: center;
+    font-weight: 650;
+}
+
+.cat--noun {
+    background: #E9F3FF;
+    border-color: #90CAF9;
+    color: #0D47A1;
+}
+
+.cat--verb {
+    background: #EAF7EE;
+    border-color: #9BD49E;
+    color: #1B5E20;
+}
+
+.cat--adj {
+    background: #F6EAF8;
+    border-color: #CE93D8;
+    color: #4A148C;
+}
+
+.cat--adv {
+    background: #FFF1E6;
+    border-color: #FFCC80;
+    color: #E65100;
+}
+
+.cat--phrase {
+    background: #E7FBFD;
+    border-color: #80DEEA;
+    color: #006064;
+}
+
+.cat--other {
+    background: #EEF2F4;
+    border-color: #B0BEC5;
+    color: #263238;
+}
+
+.cat-select:hover,
+.cat-select:focus {
+    border-color: var(--primary);
+    box-shadow: var(--focus);
+}
+
+/* ===== DARK theme override (ưu tiên nếu user bật) ===== */
+body.theme-dark {
+    --bg: #0f172a;
+    --panel: #0b1221;
+    --text: #e5e7eb;
+    --muted: #9aa3b2;
+    --border: #1e293b;
+    --shadow: 0 10px 30px rgba(0, 0, 0, .35), 0 2px 10px rgba(0, 0, 0, .3);
+    --shadow-soft: 0 6px 18px rgba(0, 0, 0, .28);
+}
+
+/* Category tokens in DARK mode — tối & dịu, chữ pastel dễ đọc */
+body.theme-dark .cat--noun {
+    background: #0f2647;
+    border-color: #1e3a8a;
+    color: #93c5fd;
+}
+
+body.theme-dark .cat--verb {
+    background: #0f2a1a;
+    border-color: #166534;
+    color: #86efac;
+}
+
+body.theme-dark .cat--adj {
+    background: #231539;
+    border-color: #6d28d9;
+    color: #c4b5fd;
+}
+
+body.theme-dark .cat--adv {
+    background: #2b1a0a;
+    border-color: #c2410c;
+    color: #fbc38d;
+}
+
+body.theme-dark .cat--phrase {
+    background: #0b2630;
+    border-color: #0e7490;
+    color: #67e8f9;
+}
+
+body.theme-dark .cat--other {
+    background: #1e293b;
+    border-color: #334155;
+    color: #cbd5e1;
+}
+
+/* ===== Responsive ===== */
+@media (max-width: 960px) {
+    .toolbar {
+        grid-template-columns: 1fr 150px 170px;
+    }
+
+    li.item {
+        grid-template-columns: 28% 20% 1fr auto;
+    }
+}
+
+@media (max-width: 720px) {
+    body {
+        padding: 14px;
+    }
+
+    .toolbar {
+        grid-template-columns: 1fr 1fr;
+    }
+
+    li.item {
+        grid-template-columns: 1fr 120px;
+        row-gap: 8px;
+    }
+
+    .remove-one {
+        grid-column: 2 / 3;
+    }
+}
+
+@media (max-width: 520px) {
+    .actions {
+        justify-content: flex-start;
+        gap: 6px;
+    }
+
+    .header {
+        padding: 8px 12px;
+    }
+
+    .toolbar {
+        gap: 10px;
+    }
+}

@@ -1,0 +1,67 @@
+<!doctype html>
+<html lang="vi">
+
+<head>
+  <meta charset="utf-8">
+  <title>Vocab</title>
+  <link rel="stylesheet" href="board.css">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+</head>
+
+<body>
+  <!-- dòng 1 -->
+  <div class="header">
+    <h3>Word Note</h3>
+    <button id="theme-toggle" class="icon-btn" aria-label="Toggle dark mode" title="Toggle dark mode">🌙</button>
+  </div>
+
+  <!-- dòng 2: search + filter + sort (hàng 1) ; actions (hàng 2) -->
+  <div class="toolbar">
+    <input id="search" type="text" placeholder="Search by words or descriptions">
+
+    <!-- filter category -->
+    <select id="filter-cat" title="Lọc theo phân loại">
+      <option value="all">All</option>
+      <option value="noun">Noun</option>
+      <option value="verb">Verb</option>
+      <option value="adj">Adj</option>
+      <option value="adv">Adv</option>
+      <option value="phrase">Phrase</option>
+      <option value="other">Other</option>
+    </select>
+
+    <!-- sort mode -->
+    <select id="sort-mode" title="Sắp xếp">
+      <option value="time_desc">Newest → Oldest</option>
+      <option value="time_asc">Oldest → Newest</option>
+      <option value="text_asc">A → Z</option>
+      <option value="text_desc">Z → A</option>
+    </select>
+
+    <!-- actions (hàng 2) -->
+    <div class="actions">
+      <button id="add">Add word manual</button>
+      <button id="export">Export JSON</button>
+      <button id="import">Import JSON</button>
+      <button id="clear">Delete All</button>
+      <button id="open-full" class="btn btn--outline-primary">Open full page</button>
+      <button id="open-quiz" class="btn btn--outline-primary">Open Quiz</button>
+      <input id="import-file" type="file" accept="application/json,.json" style="display:none">
+    </div>
+  </div>
+
+  <ul id="list"></ul>
+
+  <footer>
+    <h5>Made by CDinh</h5>
+    <div class="footer-credits">
+      <img src="../img/CDinh.png" alt="CDinh">
+      🤝
+      <img src="../img/chat.png" alt="ChatGPT">
+    </div>
+  </footer>
+
+  <script src="board.js"></script>
+</body>
+
+</html>

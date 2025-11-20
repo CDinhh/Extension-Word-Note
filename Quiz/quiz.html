@@ -1,0 +1,61 @@
+<!doctype html>
+<html lang="vi">
+
+<head>
+    <meta charset="utf-8" />
+    <title>Word Note — Quiz</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <link rel="stylesheet" href="quiz.css" />
+</head>
+
+<body>
+    <div class="header container">
+        <h3>Word Note — Quiz</h3>
+        <div class="quiz-controls">
+            <button id="theme-toggle" class="icon-btn" aria-label="Toggle theme" title="Toggle theme">🌙</button>
+            <select id="month-filter" title="Lọc theo tháng"></select>
+            <button id="start-btn" class="btn btn--outline-primary">Start</button>
+            <input id="file-input" type="file" accept="application/json,.json" hidden />
+            <button id="load-json-btn" class="btn btn--ghost">Import</button>
+        </div>
+    </div>
+
+    <div class="container">
+        <div class="quiz-panel">
+            <div class="quiz-meta">
+                <div id="counter">0 / 0</div>
+                <div class="progress">
+                    <div id="progress-bar"></div>
+                </div>
+                <div id="score">Score: 0</div>
+                <button id="finish-btn" class="btn btn--ghost">Finish</button>
+            </div>
+
+            <div id="question-card" class="q-card" hidden>
+                <div class="q-word" id="q-word">word</div>
+                <div class="q-cat" id="q-cat"></div>
+                <div class="q-options" id="q-options"></div>
+                <div class="q-nav">
+                    <button id="prev-btn" class="btn">◀ Prev</button>
+                    <button id="next-btn" class="btn">Next ▶</button>
+                </div>
+            </div>
+
+            <div id="empty-state" class="empty">
+                Chọn tháng rồi bấm <b>Start</b> hoặc <b>Import</b> một file JSON để bắt đầu.
+            </div>
+
+            <div id="result" class="result" hidden>
+                <h4>Kết quả</h4>
+                <p id="result-text"></p>
+                <button id="restart-btn" class="btn">Restart</button>
+            </div>
+        </div>
+
+
+    </div>
+
+    <script src="quiz.js" defer></script>
+</body>
+
+</html>

@@ -1,0 +1,64 @@
+<!doctype html>
+<html lang="vi">
+
+<head>
+    <meta charset="utf-8" />
+    <title>Word Note — Full Page</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <link rel="stylesheet" href="ManagePage.css" />
+</head>
+
+<body>
+    <div class="header">
+        <h1>Word Note</h1>
+        <button id="theme-toggle" class="icon-btn" aria-label="Toggle dark mode" title="Toggle dark mode">🌙</button>
+    </div>
+
+
+    <div class="toolbar">
+        <input id="search" type="text" placeholder="Search by words or descriptions" />
+        <select id="filter-cat" title="Lọc theo phân loại">
+            <option value="all">All</option>
+            <option value="noun">Noun</option>
+            <option value="verb">Verb</option>
+            <option value="adj">Adj</option>
+            <option value="adv">Adv</option>
+            <option value="phrase">Phrase</option>
+            <option value="other">Other</option>
+        </select>
+
+        <select id="sort-mode" title="Sắp xếp">
+            <option value="time_desc">Newest → Oldest</option>
+            <option value="time_asc">Oldest → Newest</option>
+            <option value="text_asc">A → Z</option>
+            <option value="text_desc">Z → A</option>
+        </select>
+
+        <div class="actions">
+            <button id="add">Add word manual</button>
+            <button id="export">Export JSON</button>
+            <button id="import">Import JSON</button>
+            <button id="clear">Delete All</button>
+            <button id="open-quiz">Open Quiz</button>
+            <input id="import-file" type="file" accept="application/json,.json" style="display:none" />
+        </div>
+    </div>
+
+    <ul id="list"></ul>
+
+    <footer>
+        <h3>Made by CDinh</h3>
+        <div class="footer-credits">
+            <img src="../img/CDinh.png" alt="CDinh" />
+            🤝
+            <img src="../img/chat.png" alt="ChatGPT" />
+        </div>
+    </footer>
+
+    <script src="../board/board.js"></script>
+
+
+
+</body>
+
+</html>
