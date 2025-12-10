@@ -49,29 +49,23 @@ async function getPrefs() {
   const r = await chrome.storage.local.get({ prefs: { filterCat, sortMode } });
   return r.prefs || { filterCat, sortMode };
 }
+
 async function setPrefs(p) {
   await chrome.storage.local.set({ prefs: p });
 }
 
-/* ===== Open Quiz (fixed single handler) ===== */
+/* ===== Open Quiz ===== */
 (() => {
-  if (window.__quizBound) return; // tránh gắn nhiều lần
-  window.__quizBound = true;
-
   document.addEventListener('click', (e) => {
     const btn = e.target.closest('#open-quiz');
     if (!btn) return;
     e.preventDefault();
-    e.stopPropagation();
-    e.stopImmediatePropagation();
 
-    const extUrl =
-      (typeof chrome !== 'undefined' && chrome.runtime?.getURL)
-        ? chrome.runtime.getURL('Quiz/quiz.html')
-        : '../Quiz/quiz.html';
+    const extUrl = chrome.runtime?.getURL
+      ? chrome.runtime.getURL('Quiz/quiz.html')
+      : '../Quiz/quiz.html';
 
-    if (typeof chrome !== 'undefined' && chrome.tabs?.create)
-      chrome.tabs.create({ url: extUrl });
+    if (chrome.tabs?.create) chrome.tabs.create({ url: extUrl });
     else window.open(extUrl, '_blank', 'noopener');
   }, true);
 })();
@@ -82,15 +76,12 @@ async function setPrefs(p) {
     const btn = e.target.closest('#open-full');
     if (!btn) return;
     e.preventDefault();
-    e.stopPropagation();
-    e.stopImmediatePropagation();
 
-    const url =
-      (typeof chrome !== 'undefined' && chrome.runtime?.getURL)
-        ? chrome.runtime.getURL('manage_page/ManagePage.html')
-        : '../manage_page/ManagePage.html';
-    if (typeof chrome !== 'undefined' && chrome.tabs?.create)
-      chrome.tabs.create({ url });
+    const url = chrome.runtime?.getURL
+      ? chrome.runtime.getURL('manage_page/ManagePage.html')
+      : '../manage_page/ManagePage.html';
+
+    if (chrome.tabs?.create) chrome.tabs.create({ url });
     else window.open(url, '_blank', 'noopener');
   }, true);
 })();
@@ -129,35 +120,49 @@ function catOptions(selected) {
 }
 
 /* ===== Download / Import helpers ===== */
-function toPrettyJSON(obj) { return JSON.stringify(obj, null, 2); }
+function toPrettyJSON(obj) {
+  return JSON.stringify(obj, null, 2);
+}
+
 function download(filename, text) {
   const blob = new Blob([text], { type: "application/json" });
   const url = URL.createObjectURL(blob);
   const a = document.createElement('a');
-  a.href = url; a.download = filename;
-  document.body.appendChild(a); a.click(); a.remove();
+  a.href = url;
+  a.download = filename;
+  document.body.appendChild(a);
+  a.click();
+  a.remove();
   URL.revokeObjectURL(url);
 }
+
 function normalizeItem(it) {
   if (!it || typeof it !== 'object') return null;
   const text = (it.text ?? '').toString().trim();
   if (!text) return null;
-  const vi = (it.vi ?? '').toString().trim();
-  const cat = (it.cat ?? 'other');
-  const url = (it.url ?? 'manual');
-  const time = Number(it.time) || Date.now();
-  return { text, vi, cat, url, time };
+  return {
+    text,
+    vi: (it.vi ?? '').toString().trim(),
+    cat: it.cat ?? 'other',
+    url: it.url ?? 'manual',
+    time: Number(it.time) || Date.now()
+  };
 }
+
 function mergeUnique(oldArr, newArr) {
-  const key = (it) => (it.text || '').toLowerCase().trim() + '|' + (it.vi || '').toLowerCase().trim();
+  const key = (it) => `${it.text || ''}|${it.vi || ''}`.toLowerCase().trim();
   const map = new Map(oldArr.map(it => [key(it), it]));
   let added = 0, replaced = 0;
+
   for (const raw of newArr) {
     const it = normalizeItem(raw);
     if (!it) continue;
     const k = key(it);
-    if (!map.has(k)) { map.set(k, it); added++; }
-    else {
+
+    if (!map.has(k)) {
+      map.set(k, it);
+      added++;
+    } else {
       const cur = map.get(k);
       cur.time = Math.max(Number(cur.time) || 0, Number(it.time) || 0);
       if (it.cat && it.cat !== 'other') cur.cat = it.cat;
@@ -165,7 +170,11 @@ function mergeUnique(oldArr, newArr) {
       replaced++;
     }
   }
-  return { list: Array.from(map.values()).sort((a, b) => (b.time || 0) - (a.time || 0)), added, replaced };
+  return {
+    list: Array.from(map.values()).sort((a, b) => (b.time || 0) - (a.time || 0)),
+    added,
+    replaced
+  };
 }
 
 /* ====== Render list ====== */
@@ -193,7 +202,7 @@ async function render() {
   });
 
   if (!data.length) {
-    ul.innerHTML = '<li class="item"><div class="meta-row"><i>Không có mục nào phù hợp</i></div></li>';
+    ul.innerHTML = '<li class="item"><div class="meta-row"><i>No matching items</i></div></li>';
     return;
   }
 
@@ -205,11 +214,11 @@ async function render() {
     const cat = it.cat || 'other';
 
     li.innerHTML = `
-      <input type="text" class="word-input" value="${(it.text || '').replace(/"/g, '&quot;')}" title="Sửa từ vựng">
-      <select class="cat-select" title="Phân loại">${catOptions(cat)}</select>
-      <input type="text" class="vi-input" placeholder="Chú thích"
+      <input type="text" class="word-input" value="${(it.text || '').replace(/"/g, '&quot;')}" title="Edit vocabulary">
+      <select class="cat-select" title="Category">${catOptions(cat)}</select>
+      <input type="text" class="vi-input" placeholder="Note"
              value="${it.vi ? it.vi.replace(/"/g, '&quot;') : ''}">
-      <button class="remove-one" title="Xoá mục này">❌</button>
+      <button class="remove-one" title="Delete this item">❌</button>
       <div class="meta-row"><div class="meta">${sourceHtml(it)} • ${formatTime(it.time)}</div></div>`;
     ul.appendChild(li);
 
@@ -281,13 +290,13 @@ document.addEventListener('DOMContentLoaded', async () => {
   });
 
   document.getElementById('clear').addEventListener('click', async () => {
-    if (!confirm('Xoá toàn bộ danh sách?')) return;
+    if (!confirm('Delete all items?')) return;
     await setItems([]); render();
   });
 
   document.getElementById('add').addEventListener('click', async () => {
-    const word = prompt("Nhập từ vựng muốn thêm:"); if (!word) return;
-    const vi = prompt("Nhập chú thích (nếu có):") || "";
+    const word = prompt("Enter vocabulary:"); if (!word) return;
+    const vi = prompt("Enter note (optional):") || "";
     const items = await getItems();
     items.unshift({ text: word.trim(), vi: vi.trim(), cat: 'other', url: 'manual', time: Date.now() });
     await setItems(items); render();
@@ -296,8 +305,7 @@ document.addEventListener('DOMContentLoaded', async () => {
   document.getElementById('export').addEventListener('click', async () => {
     const items = await getItems();
     const stamp = new Date().toISOString().slice(0, 19).replace(/[:T]/g, '-');
-    const fname = `word-note-${stamp}.json`;
-    download(fname, toPrettyJSON(items));
+    download(`word-note-${stamp}.json`, toPrettyJSON(items));
   });
 
   const btnImport = document.getElementById('import');
@@ -307,34 +315,36 @@ document.addEventListener('DOMContentLoaded', async () => {
   inputFile.addEventListener('change', async (e) => {
     const file = e.target.files?.[0];
     if (!file) return;
+
     try {
       const text = await file.text();
       const data = JSON.parse(text);
-      if (!Array.isArray(data)) throw new Error('File JSON không đúng định dạng');
+      if (!Array.isArray(data)) throw new Error('Invalid JSON file format');
 
       const current = await getItems();
       const doReplace = confirm(
-        "Import JSON\n\nOK = Replace (ghi đè toàn bộ)\nCancel = Merge & Update (gộp và cập nhật)\n\nLưu ý: Cancel không ghi đè từ 'manual' hay 'other'"
+        "Import JSON\n\nOK = Replace (overwrite)\nCancel = Merge (combine and update)"
       );
 
       let resultList = [], added = 0, replaced = 0;
+
       if (doReplace) {
         resultList = data.map(normalizeItem).filter(Boolean)
           .sort((a, b) => (b.time || 0) - (a.time || 0));
         added = resultList.length;
       } else {
-        const { list, added: a, replaced: r } = mergeUnique(current, data);
-        resultList = list; added = a; replaced = r;
+        const merged = mergeUnique(current, data);
+        resultList = merged.list;
+        added = merged.added;
+        replaced = merged.replaced;
       }
+
       await setItems(resultList);
       render();
-
-      alert(doReplace
-        ? `Đã replace ${added} mục.`
-        : `Đã merge: +${added} mới, cập nhật ${replaced}.`);
+      alert(doReplace ? `Replaced ${added} items.` : `Merged: +${added} new, updated ${replaced}.`);
     } catch (err) {
       console.error(err);
-      alert("Import thất bại: " + (err?.message || err));
+      alert("Import failed: " + (err?.message || err));
     } finally {
       e.target.value = '';
     }
@@ -342,3 +352,80 @@ document.addEventListener('DOMContentLoaded', async () => {
 
   render();
 });
+
+/* ===== Translator ===== */
+(() => {
+  const translateBtn = document.getElementById('translate-btn');
+  const translateInput = document.getElementById('translate-input');
+  const translateOutput = document.getElementById('translate-output');
+  const sourceLangSelect = document.getElementById('source-lang');
+  const targetLangSelect = document.getElementById('target-lang');
+
+  if (!translateBtn || !translateInput || !translateOutput || !sourceLangSelect || !targetLangSelect) return;
+
+  // Load saved language preferences
+  const savedSourceLang = localStorage.getItem('translate-source-lang') || 'auto';
+  const savedTargetLang = localStorage.getItem('translate-target-lang') || 'vi';
+  sourceLangSelect.value = savedSourceLang;
+  targetLangSelect.value = savedTargetLang;
+
+  // Save preferences on change
+  sourceLangSelect.addEventListener('change', () => {
+    localStorage.setItem('translate-source-lang', sourceLangSelect.value);
+    chrome.storage.local.set({ 'translate-source-lang': sourceLangSelect.value });
+  });
+
+  targetLangSelect.addEventListener('change', () => {
+    localStorage.setItem('translate-target-lang', targetLangSelect.value);
+    chrome.storage.local.set({ 'translate-target-lang': targetLangSelect.value });
+  });
+
+  translateBtn.addEventListener('click', async () => {
+    const text = translateInput.value.trim();
+    if (!text) {
+      translateOutput.textContent = 'Please enter text to translate';
+      return;
+    }
+
+    const sourceLang = sourceLangSelect.value;
+    const targetLang = targetLangSelect.value;
+
+    translateBtn.disabled = true;
+    translateBtn.textContent = '⏳ Translating...';
+    translateOutput.textContent = 'Translating...';
+
+    try {
+      const url = `https://translate.googleapis.com/translate_a/single?client=gtx&sl=${sourceLang}&tl=${targetLang}&dt=t&q=${encodeURIComponent(text)}`;
+      const response = await fetch(url);
+
+      if (!response.ok) {
+        throw new Error(`Translation error: ${response.status}`);
+      }
+
+      const data = await response.json();
+
+      // Extract translated text
+      if (data && data[0] && Array.isArray(data[0])) {
+        const translatedParts = data[0].map(part => part[0]).filter(Boolean);
+        const result = translatedParts.join('');
+        translateOutput.textContent = result || 'Cannot translate this text';
+      } else {
+        throw new Error('Invalid response format');
+      }
+    } catch (error) {
+      console.error('Translation error:', error);
+      translateOutput.textContent = '❌ Translation failed. Please try again.';
+    } finally {
+      translateBtn.disabled = false;
+      translateBtn.textContent = 'Translate';
+    }
+  });
+
+  // Enter to translate
+  translateInput.addEventListener('keydown', (e) => {
+    if (e.key === 'Enter' && e.ctrlKey) {
+      e.preventDefault();
+      translateBtn.click();
+    }
+  });
+})();

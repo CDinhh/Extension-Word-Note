@@ -12,6 +12,9 @@
     "storage",
     "tabs"
   ],
+  "host_permissions": [
+    "https://translation.googleapis.com/*"
+  ],
   "action": {
     "default_popup": "board/dashBoard.html",
     "default_icon": "img/logo.png"
@@ -22,6 +25,7 @@
         "<all_urls>"
       ],
       "js": [
+        "page_interactor/translate.js",
         "page_interactor/content.js"
       ],
       "css": [

@@ -15,12 +15,19 @@
     <button id="theme-toggle" class="icon-btn" aria-label="Toggle dark mode" title="Toggle dark mode">🌙</button>
   </div>
 
+  <!-- Translator Section -->
+  <div class="translator-section">
+    <textarea id="translate-input" placeholder="Enter text to translate..."></textarea>
+    <button id="translate-btn" class="btn btn-translate">Translate</button>
+    <div id="translate-output" class="translate-output"></div>
+  </div>
+
   <!-- dòng 2: search + filter + sort (hàng 1) ; actions (hàng 2) -->
   <div class="toolbar">
     <input id="search" type="text" placeholder="Search by words or descriptions">
 
     <!-- filter category -->
-    <select id="filter-cat" title="Lọc theo phân loại">
+    <select id="filter-cat" title="Filter by category">
       <option value="all">All</option>
       <option value="noun">Noun</option>
       <option value="verb">Verb</option>
@@ -31,7 +38,7 @@
     </select>
 
     <!-- sort mode -->
-    <select id="sort-mode" title="Sắp xếp">
+    <select id="sort-mode" title="Sort by">
       <option value="time_desc">Newest → Oldest</option>
       <option value="time_asc">Oldest → Newest</option>
       <option value="text_asc">A → Z</option>
@@ -53,12 +60,42 @@
   <ul id="list"></ul>
 
   <footer>
-    <h5>Made by CDinh</h5>
+    <div class="footer-translate-config">
+      <label>
+        From:
+        <select id="source-lang">
+          <option value="auto">Auto Detect</option>
+          <option value="en">English</option>
+          <option value="vi">Vietnamese</option>
+          <option value="zh-CN">Chinese</option>
+          <option value="ja">Japanese</option>
+          <option value="ko">Korean</option>
+          <option value="fr">French</option>
+          <option value="de">German</option>
+          <option value="es">Spanish</option>
+        </select>
+      </label>
+      <span class="arrow">→</span>
+      <label>
+        To:
+        <select id="target-lang">
+          <option value="vi">Vietnamese</option>
+          <option value="en">English</option>
+          <option value="zh-CN">Chinese</option>
+          <option value="ja">Japanese</option>
+          <option value="ko">Korean</option>
+          <option value="fr">French</option>
+          <option value="de">German</option>
+          <option value="es">Spanish</option>
+        </select>
+      </label>
+    </div>
+    <!-- <h5>Made by CDinh</h5>
     <div class="footer-credits">
       <img src="../img/CDinh.png" alt="CDinh">
       🤝
       <img src="../img/chat.png" alt="ChatGPT">
-    </div>
+    </div> -->
   </footer>
 
   <script src="board.js"></script>

@@ -1,4 +1,4 @@
-/* ===== Bubble (overlay fixed, thoát mọi container) ===== */
+/* ===== Bubble (overlay fixed) ===== */
 #vocab-bubble {
   position: fixed !important;
   display: inline-flex;
@@ -13,31 +13,23 @@
   z-index: 2147483647 !important;
   user-select: none;
   white-space: nowrap;
-  box-shadow:
-    0 10px 25px rgba(0, 0, 0, 0.08),
-    0 4px 10px rgba(0, 0, 0, 0.04),
-    inset 0 1px 0 rgba(255, 255, 255, 0.8);
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.08), 0 4px 10px rgba(0, 0, 0, 0.04), 
+              inset 0 1px 0 rgba(255, 255, 255, 0.8);
   max-width: 90vw;
   isolation: isolate;
   backdrop-filter: blur(16px);
-  transform: none;
-  transition: none;
 }
 
 #vocab-bubble:hover {
   background: linear-gradient(135deg, #f8fafc 0%, #ffffff 100%);
-  box-shadow:
-    0 20px 40px rgba(0, 0, 0, 0.12),
-    0 8px 16px rgba(0, 0, 0, 0.06),
-    inset 0 1px 0 rgba(255, 255, 255, 0.9);
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.12), 0 8px 16px rgba(0, 0, 0, 0.06), 
+              inset 0 1px 0 rgba(255, 255, 255, 0.9);
   border-color: rgba(0, 0, 0, 0.12);
 }
 
 #vocab-bubble img {
   width: 20px;
   height: 20px;
-  display: inline-block;
-  vertical-align: middle;
   filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.1));
   transition: transform 0.2s ease;
 }
@@ -46,43 +38,8 @@
   transform: scale(1.1);
 }
 
-/* ===== Toast ===== */
-#vocab-toast {
-  position: fixed;
-  z-index: 2147483647;
-  background: linear-gradient(135deg, #1f2937 0%, #111827 100%);
-  color: #f9fafb;
-  padding: 24px 32px;
-  border-radius: 20px;
-  font-family: system-ui, -apple-system, Segoe UI, Roboto, sans-serif;
-  font-size: 20px;
-  line-height: 1.4;
-  font-weight: 600;
-  letter-spacing: 0.3px;
-  text-align: left;
-  box-shadow:
-    0 25px 50px rgba(0, 0, 0, 0.25),
-    0 10px 20px rgba(0, 0, 0, 0.15),
-    inset 0 1px 0 rgba(255, 255, 255, 0.1);
-  max-width: 480px;
-  min-width: 200px;
-  opacity: 0;
-  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-  white-space: normal;
-  word-break: break-word;
-  overflow-wrap: anywhere;
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  backdrop-filter: blur(20px);
-  transform: scale(0.95) translateY(5px);
-}
-
-#vocab-toast.show {
-  opacity: 1;
-  transform: scale(1) translateY(0px);
-}
-
-/* Save / Note */
 #vocab-bubble .save-label,
+#vocab-bubble .translate-label,
 #vocab-bubble .note-btn {
   font: 14px/1.3 system-ui, -apple-system, Segoe UI, sans-serif;
   cursor: pointer;
@@ -95,6 +52,7 @@
 }
 
 #vocab-bubble .save-label:hover,
+#vocab-bubble .translate-label:hover,
 #vocab-bubble .note-btn:hover {
   color: #1d4ed8;
   background: rgba(37, 99, 235, 0.08);
@@ -107,13 +65,7 @@
   margin-left: 8px;
 }
 
-/* ===== 1 hàng – đồng nhất chiều cao ===== */
-:root {
-  --vb-h: 34px;
-}
-
-/* có thể chỉnh 32–36 */
-
+/* ===== Note editor inline ===== */
 #vocab-bubble .note-inline {
   display: inline-flex;
   align-items: center;
@@ -124,32 +76,40 @@
 #vocab-bubble .note-cat,
 #vocab-bubble .note-input,
 #vocab-bubble .btn {
-  height: var(--vb-h) !important;
-  line-height: calc(var(--vb-h) - 2px) !important;
-  padding: 0 12px !important;
-  box-sizing: border-box !important;
-  border-radius: 8px !important;
-  font-size: 13px !important;
+  height: 34px;
+  line-height: 32px;
+  padding: 0 12px;
+  box-sizing: border-box;
+  border-radius: 8px;
+  font-size: 13px;
 }
 
-/* Select */
+#vocab-bubble .btn-translate {
+  min-width: 34px;
+  padding: 0 8px;
+  font-size: 16px;
+  cursor: pointer;
+}
+
+#vocab-bubble .btn-translate:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
 #vocab-bubble .note-cat {
-  border: 1px solid #d1d5db !important;
-  background: #fff !important;
-  color: #333 !important;
-  appearance: none !important;
-  -webkit-appearance: none !important;
-  -moz-appearance: none !important;
-  transition: border-color .15s ease !important;
+  border: 1px solid #d1d5db;
+  background: #fff;
+  color: #333;
+  appearance: none;
+  transition: border-color .15s ease;
 }
 
 #vocab-bubble .note-cat:focus {
-  border-color: #1d4ed8 !important;
-  outline: none !important;
-  box-shadow: 0 0 0 2px rgba(29, 78, 216, .25) !important;
+  border-color: #1d4ed8;
+  outline: none;
+  box-shadow: 0 0 0 2px rgba(29, 78, 216, .25);
 }
 
-/* Input */
 #vocab-bubble .note-input {
   min-width: 220px;
   max-width: 40vw;
@@ -165,19 +125,14 @@
   box-shadow: 0 0 0 2px rgba(29, 78, 216, .25);
 }
 
-/* Button */
 #vocab-bubble .btn {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
   border: 1px solid #1d4ed8;
   background: #1d4ed8;
   color: #fff;
   cursor: pointer;
-  transition: background .15s ease, box-shadow .15s ease;
-  white-space: nowrap;
   font-weight: 500;
   letter-spacing: .2px;
+  transition: background .15s ease, box-shadow .15s ease;
 }
 
 #vocab-bubble .btn:hover {
@@ -190,27 +145,32 @@
   box-shadow: none;
 }
 
-
 /* ===== Toast ===== */
 #vocab-toast {
   position: fixed;
   z-index: 2147483647;
-  background: #222;
-  color: #f5f5f5;
-  padding: 10px 16px;
-  border-radius: 8px;
-  font: 13px/1.3 system-ui, -apple-system, Segoe UI, sans-serif;
-  font-weight: 500;
-  text-align: center;
-  box-shadow: 0 4px 14px rgba(0, 0, 0, .28);
-  max-width: 300px;
-  min-width: 120px;
+  background: linear-gradient(135deg, #1f2937 0%, #111827 100%);
+  color: #f9fafb;
+  padding: 24px 32px;
+  border-radius: 20px;
+  font-family: system-ui, -apple-system, Segoe UI, Roboto, sans-serif;
+  font-size: 20px;
+  line-height: 1.4;
+  font-weight: 600;
+  letter-spacing: 0.3px;
+  box-shadow: 0 25px 50px rgba(0, 0, 0, 0.25), 0 10px 20px rgba(0, 0, 0, 0.15), 
+              inset 0 1px 0 rgba(255, 255, 255, 0.1);
+  max-width: 480px;
+  min-width: 200px;
   opacity: 0;
-  transition: opacity .18s ease;
-  white-space: nowrap;
-  border: 1px solid #333;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(20px);
+  transform: scale(0.95) translateY(5px);
+  text-align: center;
 }
 
 #vocab-toast.show {
   opacity: 1;
+  transform: scale(1) translateY(0px);
 }

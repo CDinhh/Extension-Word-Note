@@ -1,9 +1,8 @@
-// ===== Quiz/quiz.js — Final polished version =====
+// ===== Quiz/quiz.js =====
 
-// Có chrome.storage khi chạy trong extension; ngoài ra thì không.
-const hasChromeStorage = typeof chrome !== 'undefined' && chrome && chrome.storage;
+const hasChromeStorage = typeof chrome !== 'undefined' && chrome?.storage;
 
-// ===== Helpers to load data from storage or file =====
+// ===== Load data from storage =====
 async function loadAllWords() {
     if (hasChromeStorage) {
         try {
@@ -11,21 +10,16 @@ async function loadAllWords() {
                 chrome.storage.local.get(null, (obj) => res(obj || {}))
             );
             const fromSync = await new Promise((res) =>
-            (chrome.storage.sync
-                ? chrome.storage.sync.get(null, (obj) => res(obj || {}))
-                : res({}))
+                chrome.storage.sync
+                    ? chrome.storage.sync.get(null, (obj) => res(obj || {}))
+                    : res({})
             );
             const merged = { ...fromLocal, ...fromSync };
-            const candidates =
-                merged['vocab_items'] ||
-                merged['words'] ||
-                merged['wn-words'] ||
-                merged['wordNote'] ||
-                merged['WordNote'];
+            const candidates = merged['vocab_items'] || merged['words'] || merged['wn-words'] ||
+                merged['wordNote'] || merged['WordNote'];
 
             if (Array.isArray(candidates)) return normalizeWords(candidates);
-            if (candidates && typeof candidates === "object")
-                return normalizeWords(Object.values(candidates));
+            if (candidates && typeof candidates === "object") return normalizeWords(Object.values(candidates));
         } catch (_) { }
     }
 
@@ -44,23 +38,15 @@ async function loadAllWords() {
     return [];
 }
 
-// Chuẩn hóa item
 function normalizeWords(list) {
     return list
-        .map((x, idx) => {
-            const id = x.id ?? x.wordId ?? x._id ?? idx + 1;
-            const word = x.word ?? x.en ?? x.text ?? "";
-            const vi = x.vi ?? x.vn ?? x.meaning ?? x.description ?? x.desc ?? "";
-            const cat = x.cat ?? x.category ?? x.type ?? "other";
-            const createdAt = x.createdAt ?? x.time ?? x.timestamp ?? x.created ?? Date.now();
-            return {
-                id,
-                word: String(word).trim(),
-                vi: String(vi).trim(),
-                cat,
-                createdAt: Number(createdAt) || Date.now(),
-            };
-        })
+        .map((x, idx) => ({
+            id: x.id ?? x.wordId ?? x._id ?? idx + 1,
+            word: String(x.word ?? x.en ?? x.text ?? "").trim(),
+            vi: String(x.vi ?? x.vn ?? x.meaning ?? x.description ?? x.desc ?? "").trim(),
+            cat: x.cat ?? x.category ?? x.type ?? "other",
+            createdAt: Number(x.createdAt ?? x.time ?? x.timestamp ?? x.created) || Date.now()
+        }))
         .filter((x) => x.word && x.vi);
 }
 
@@ -97,13 +83,19 @@ const elFileInput = $("#file-input");
 
     function apply(mode) {
         document.body.classList.remove('theme-dark', 'theme-light');
-        if (mode === 'dark') { document.body.classList.add('theme-dark'); btn.textContent = '☀️'; }
-        else { document.body.classList.add('theme-light'); btn.textContent = '🌙'; }
+        if (mode === 'dark') {
+            document.body.classList.add('theme-dark');
+            btn.textContent = '☀️';
+        } else {
+            document.body.classList.add('theme-light');
+            btn.textContent = '🌙';
+        }
     }
 
     const saved = localStorage.getItem('wn-theme');
-    if (saved === 'dark' || saved === 'light') apply(saved);
-    else {
+    if (saved === 'dark' || saved === 'light') {
+        apply(saved);
+    } else {
         const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
         apply(prefersDark ? 'dark' : 'light');
     }
@@ -120,8 +112,7 @@ const elFileInput = $("#file-input");
 function updateProgress() {
     const bar = document.getElementById('progress-bar');
     if (!bar || !QUESTIONS.length) return;
-    const pct = Math.round(((idx + 1) / QUESTIONS.length) * 100);
-    bar.style.width = pct + '%';
+    bar.style.width = `${Math.round(((idx + 1) / QUESTIONS.length) * 100)}%`;
 }
 
 /* ===== Build UI ===== */
@@ -134,10 +125,12 @@ function fillMonthOptions(words) {
     );
     const sorted = Array.from(months).sort().reverse();
     elMonth.innerHTML = "";
+
     const optAll = document.createElement("option");
     optAll.value = "all";
     optAll.textContent = "All months";
     elMonth.appendChild(optAll);
+
     for (const m of sorted) {
         const o = document.createElement("option");
         o.value = m;
@@ -149,22 +142,18 @@ function fillMonthOptions(words) {
 
 function buildQuestionsFrom(pool) {
     const sorted = [...pool].sort((a, b) => (b.createdAt || 0) - (a.createdAt || 0));
-    const qs = [];
-    for (let i = 0; i < sorted.length; i++) {
-        const item = sorted[i];
+    return sorted.map(item => {
         const distractors = pickDistractors(sorted, item, 3);
         const options = shuffle([item.vi, ...distractors]);
-        const answerIndex = options.findIndex((t) => t === item.vi);
-        qs.push({
+        return {
             word: item.word,
             cat: item.cat,
             correct: item.vi,
             options,
-            answerIndex,
-            chosen: null,
-        });
-    }
-    return qs;
+            answerIndex: options.findIndex((t) => t === item.vi),
+            chosen: null
+        };
+    });
 }
 
 function pickDistractors(pool, item, n) {
@@ -189,8 +178,7 @@ function revealFeedback(q) {
     [...elOpts.children].forEach((wrap, i) => {
         wrap.classList.add("disabled");
         if (i === q.answerIndex) wrap.classList.add("correct");
-        if (q.chosen === i && q.chosen !== q.answerIndex)
-            wrap.classList.add("wrong");
+        if (q.chosen === i && q.chosen !== q.answerIndex) wrap.classList.add("wrong");
     });
 
     let fb = document.querySelector(".q-feedback");
@@ -199,11 +187,12 @@ function revealFeedback(q) {
         fb.className = "q-feedback";
         elCard.appendChild(fb);
     }
+
     if (q.chosen === q.answerIndex) {
-        fb.textContent = "✅ Chính xác!";
+        fb.textContent = "Chính xác!";
         fb.className = "q-feedback ok";
     } else {
-        fb.textContent = `❌ Sai. Đáp án đúng: ${q.correct}`;
+        fb.textContent = `Sai. Đáp án đúng: ${q.correct}`;
         fb.className = "q-feedback bad";
     }
 }
@@ -217,9 +206,9 @@ function renderQuestion() {
     elCat.textContent = q.cat || "other";
     elCat.className = "q-cat";
     if (q.cat) elCat.classList.add(`cat--${q.cat.toLowerCase()}`);
+    elCat.style.display = 'inline-flex'; // Hiện q-cat khi render câu hỏi
 
-    const fbExist = document.querySelector(".q-feedback");
-    if (fbExist) fbExist.remove();
+    document.querySelector(".q-feedback")?.remove();
 
     elOpts.innerHTML = "";
     q.options.forEach((op, i) => {
@@ -236,10 +225,6 @@ function renderQuestion() {
             q.chosen = i;
             recomputeScore();
             revealFeedback(q);
-            // tự next sau 1.2s — comment nếu muốn bấm tay
-            // setTimeout(() => {
-            //     if (idx < QUESTIONS.length - 1) next();
-            // }, 1200);
         });
 
         const text = document.createElement("div");
@@ -264,6 +249,7 @@ function recomputeScore() {
     );
     elScore.textContent = `Score: ${score}`;
 }
+
 function showResult() {
     finished = true;
     renderQuestion();
@@ -273,13 +259,16 @@ function showResult() {
     )}%).`;
     elResult.hidden = false;
 }
+
 function goto(i) {
     idx = Math.min(Math.max(0, i), QUESTIONS.length - 1);
     renderQuestion();
 }
+
 function next() {
     if (idx < QUESTIONS.length - 1) goto(idx + 1);
 }
+
 function prev() {
     if (idx > 0) goto(idx - 1);
 }
@@ -305,7 +294,6 @@ async function init() {
         idx = 0;
         score = 0;
         finished = false;
-
         recomputeScore();
         elEmpty.hidden = true;
         elResult.hidden = true;
@@ -321,7 +309,6 @@ async function init() {
         showResult();
     });
 
-    // ===== Restart fix =====
     const restartBtn = document.getElementById("restart-btn");
     if (restartBtn) {
         restartBtn.addEventListener("click", () => {
@@ -338,11 +325,11 @@ async function init() {
         });
     }
 
-    // ===== Import JSON =====
     elLoadBtn?.addEventListener("click", () => elFileInput.click());
     elFileInput?.addEventListener("change", async (e) => {
         const file = e.target.files?.[0];
         if (!file) return;
+
         try {
             const text = await file.text();
             const json = JSON.parse(text);

@@ -73,9 +73,9 @@ body {
 
 .container {
     width: 100%;
-    max-width: var(--maxw);
+    max-width: 1100px;
     margin: 22px auto;
-    padding: 0 18px
+    padding: 0 18px;
 }
 
 /* --- Header --- */
@@ -89,6 +89,9 @@ body {
     padding: 12px 16px;
     box-shadow: var(--soft);
     backdrop-filter: saturate(120%) blur(6px);
+    width: calc(1100px - 36px);
+    margin-left: auto;
+    margin-right: auto;
 }
 
 .header h3 {
@@ -177,6 +180,22 @@ body.theme-dark .btn--outline-primary {
     background: color-mix(in oklab, var(--panel) 94%, #000 6%);
 }
 
+/* Finish button - nổi bật hơn */
+#finish-btn {
+    background: var(--primary);
+    color: white;
+    border-style: solid;
+    border-color: var(--primary);
+    font-weight: 600;
+}
+
+#finish-btn:hover {
+    background: color-mix(in oklab, var(--primary) 90%, #000 10%);
+    border-color: color-mix(in oklab, var(--primary) 90%, #000 10%);
+    color: white;
+    box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
+}
+
 /* --- Panel & Meta --- */
 .quiz-panel {
     background: var(--panel);
@@ -184,6 +203,8 @@ body.theme-dark .btn--outline-primary {
     border-radius: 18px;
     padding: 16px;
     box-shadow: var(--shadow);
+    width: calc(1100px - 36px);
+    margin: 0 auto;
 }
 
 .quiz-meta {
@@ -238,6 +259,7 @@ body.theme-dark .progress {
     font-size: 26px;
     font-weight: 800;
     letter-spacing: .2px;
+    padding-left: 14px;
 }
 
 .q-cat {

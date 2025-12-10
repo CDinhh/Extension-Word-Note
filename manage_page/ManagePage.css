@@ -254,6 +254,15 @@ li.item:last-child {
     box-shadow: var(--focus);
 }
 
+.cat-select {
+  cursor: pointer;
+}
+
+#filter-cat,
+#sort-mode {
+  cursor: pointer;
+}
+
 .remove-one {
     padding: 7px 10px;
     font-size: var(--fs-sm);
