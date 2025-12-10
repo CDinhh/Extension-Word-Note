@@ -29,8 +29,8 @@ async function setItems(items) {
     const saved = localStorage.getItem('wn-theme');
     if (saved === 'dark' || saved === 'light') apply(saved);
     else {
-      const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
-      apply(prefersDark ? 'dark' : 'light');
+      // Default to light mode
+      apply('light');
     }
     btn.addEventListener('click', () => {
       const isDark = document.body.classList.contains('theme-dark');

@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Welcome to Word Note</title>
+    <link rel="stylesheet" href="welcome.css">
+</head>
+
+<body class="theme-light">
+    <div class="container">
+        <div class="header">
+            <img src="../img/logo128.png" alt="Word Note Logo" class="logo">
+            <h1>Welcome to Word Note!</h1>
+            <p class="subtitle">Your personal vocabulary learning companion</p>
+        </div>
+
+        <div class="content">
+            <!-- Language Selection Section -->
+            <section class="config-section">
+                <h2>⚙️ Quick Setup</h2>
+                <div class="config-card">
+                    <label for="default-source-lang">Default Translation Direction:</label>
+                    <div class="lang-config">
+                        <select id="default-source-lang">
+                            <option value="auto">Auto Detect</option>
+                            <option value="en" selected>English</option>
+                            <option value="vi">Vietnamese</option>
+                            <option value="zh-CN">Chinese</option>
+                            <option value="ja">Japanese</option>
+                            <option value="ko">Korean</option>
+                            <option value="fr">French</option>
+                            <option value="de">German</option>
+                            <option value="es">Spanish</option>
+                        </select>
+                        <span class="arrow">→</span>
+                        <select id="default-target-lang">
+                            <option value="vi" selected>Vietnamese</option>
+                            <option value="en">English</option>
+                            <option value="zh-CN">Chinese</option>
+                            <option value="ja">Japanese</option>
+                            <option value="ko">Korean</option>
+                            <option value="fr">French</option>
+                            <option value="de">German</option>
+                            <option value="es">Spanish</option>
+                        </select>
+                    </div>
+                    <p class="config-note">You can change this later in the extension settings</p>
+                </div>
+            </section>
+
+            <section class="guide-section">
+                <h2>🎯 Quick Start Guide</h2>
+
+                <div class="step">
+                    <div class="step-number">1</div>
+                    <div class="step-content">
+                        <h3>📌 Pin the Extension</h3>
+                        <p>Click the <strong>Extensions icon</strong> (puzzle piece 🧩) in your Chrome toolbar</p>
+                        <p>Find <strong>"Word Note"</strong> and click the <strong>📌 pin icon</strong></p>
+                        <div class="screenshot-placeholder">
+                            <img src="../img/1.jpg" alt="How to pin extension - Step 1" id="pin-guide-img-1">
+                            <div class="fallback-text">
+                                <p>👆 Click the puzzle icon (🧩) → Find "Word Note" → Click pin (📌)</p>
+                            </div>
+                        </div>
+                        <div class="screenshot-placeholder">
+                            <img src="../img/2.jpg" alt="How to pin extension - Step 2" id="pin-guide-img-2">
+                            <div class="fallback-text">
+                                <p>📌 Extension pinned successfully!</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="step">
+                    <div class="step-number">2</div>
+                    <div class="step-content">
+                        <h3>📝 Save Words</h3>
+                        <p>Select any text on a webpage</p>
+                        <p>Click <strong>"Save it"</strong> or <strong>"Translate"</strong> in the popup bubble</p>
+                        <p>Add notes and choose word category</p>
+                    </div>
+                </div>
+
+                <div class="step">
+                    <div class="step-number">3</div>
+                    <div class="step-content">
+                        <h3>📚 Manage Vocabulary</h3>
+                        <p>Click the Word Note icon in toolbar to open your dashboard</p>
+                        <p>Search, filter, and organize your saved words</p>
+                        <p>Export/import your vocabulary list</p>
+                    </div>
+                </div>
+
+                <div class="step">
+                    <div class="step-number">4</div>
+                    <div class="step-content">
+                        <h3>🎮 Test Your Knowledge</h3>
+                        <p>Click <strong>"Open Quiz"</strong> to practice your vocabulary</p>
+                        <p>Review saved words with interactive quizzes</p>
+                    </div>
+                </div>
+            </section>
+
+            <section class="features-section">
+                <h2>✨ Features</h2>
+                <div class="features-grid">
+                    <div class="feature">
+                        <div class="feature-icon">🌐</div>
+                        <h3>Free Translation</h3>
+                        <p>Auto-translate words with multiple language support</p>
+                    </div>
+                    <div class="feature">
+                        <div class="feature-icon">📂</div>
+                        <h3>Categories</h3>
+                        <p>Organize by Noun, Verb, Adjective, and more</p>
+                    </div>
+                    <div class="feature">
+                        <div class="feature-icon">🎮</div>
+                        <h3>Interactive Quiz</h3>
+                        <p>Test your knowledge with fun multiple-choice quizzes</p>
+                    </div>
+                    <div class="feature">
+                        <div class="feature-icon">🌙</div>
+                        <h3>Dark Mode</h3>
+                        <p>Comfortable viewing in any lighting</p>
+                    </div>
+                    <div class="feature">
+                        <div class="feature-icon">💾</div>
+                        <h3>Export/Import</h3>
+                        <p>Backup and share your vocabulary lists</p>
+                    </div>
+                </div>
+            </section>
+
+            <section class="tips-section">
+                <h2>💡 Pro Tips</h2>
+                <ul>
+                    <li>Press <strong>Enter</strong> to quickly save after editing notes</li>
+                    <li>Use <strong>Ctrl+Enter</strong> in translator to translate quickly</li>
+                    <li>Click on saved words to view your notes</li>
+                    <li>Export regularly to backup your vocabulary</li>
+                </ul>
+            </section>
+        </div>
+
+        <div class="footer">
+            <button id="get-started" class="btn-primary">Get Started!</button>
+            <button id="open-dashboard" class="btn-secondary">Open Dashboard</button>
+        </div>
+    </div>
+
+    <script src="welcome.js"></script>
+</body>
+
+</html>

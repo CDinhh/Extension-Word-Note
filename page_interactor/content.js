@@ -43,27 +43,15 @@ function showToast(msg, duration = 2500) {
   const node = document.createElement('div');
   node.id = 'vocab-toast';
   node.textContent = msg;
-  node.style.visibility = 'hidden';
   document.documentElement.appendChild(node);
 
-  const rect = node.getBoundingClientRect();
-  const offset = 15;
-  const vw = window.innerWidth, vh = window.innerHeight;
+  console.log('Toast created:', msg, node);
 
-  let left = Math.min(lastMouse.clientX + offset, vw - rect.width - 8);
-  let top = Math.min(lastMouse.clientY + offset, vh - rect.height - 8);
-
-  if (left + rect.width > vw - 8) left = lastMouse.clientX - rect.width - offset;
-  if (top + rect.height > vh - 8) top = lastMouse.clientY - rect.height - offset;
-
-  left = Math.max(8, left);
-  top = Math.max(8, top);
-
-  node.style.left = `${left}px`;
-  node.style.top = `${top}px`;
-  node.style.visibility = 'visible';
-
-  setTimeout(() => node.classList.add('show'), 10);
+  // Show at bottom-right corner
+  setTimeout(() => {
+    node.classList.add('show');
+    console.log('Toast show class added');
+  }, 10);
   setTimeout(() => {
     node.classList.remove('show');
     setTimeout(() => node.remove(), 300);
@@ -154,7 +142,7 @@ function openNoteEditor(initialText, autoTranslatedText = '') {
 
   const btnSave = document.createElement('button');
   btnSave.className = 'btn btn-save';
-  btnSave.textContent = 'Lưu';
+  btnSave.textContent = 'Save';
 
   wrap.append(catSel, input, btnSave);
   bubble.appendChild(wrap);
@@ -280,9 +268,35 @@ async function showBubbleAtSelection() {
       }
     });
 
+    const noteImg = document.createElement('img');
+    try {
+      noteImg.src = chrome.runtime.getURL('img/logo.png');
+    } catch (e) {
+      noteImg.textContent = '📖';
+      noteImg.style.width = 'auto';
+      noteImg.style.height = 'auto';
+      noteImg.style.filter = 'none';
+    }
+    noteImg.title = "Show saved note";
+    noteImg.style.display = 'none';
+    noteImg.addEventListener('mousedown', e => { e.preventDefault(); e.stopPropagation(); });
+    noteImg.addEventListener('click', async (e) => {
+      e.stopPropagation();
+      const t = window.getSelection().toString().trim() || lastText;
+      const data = await findNote(t);
+      if (data) {
+        const catLabel = getCatLabel(data.cat);
+        const parts = [];
+        if (catLabel) parts.push(`(${catLabel})`);
+        if (data.vi) parts.push(data.vi);
+        showToast(parts.join(' ').trim() || 'No note');
+      }
+      removeBubble();
+    });
+
     const noteBtn = document.createElement('span');
     noteBtn.className = 'note-btn';
-    noteBtn.textContent = 'Note';
+    noteBtn.textContent = 'Show Saved Note';
     noteBtn.style.display = 'none';
     noteBtn.addEventListener('mousedown', e => { e.preventDefault(); e.stopPropagation(); });
     noteBtn.addEventListener('click', async (e) => {
@@ -299,7 +313,7 @@ async function showBubbleAtSelection() {
       removeBubble();
     });
 
-    bubble.append(img, save, translateBtn, noteBtn);
+    bubble.append(img, save, translateBtn, noteImg, noteBtn);
     document.documentElement.appendChild(bubble);
 
     document.addEventListener('mousedown', (e) => {
@@ -315,13 +329,17 @@ async function showBubbleAtSelection() {
   const saveLabel = bubble.querySelector('.save-label');
   const translateLabel = bubble.querySelector('.translate-label');
   const saveIcon = bubble.querySelector('img');
+  const noteImgs = bubble.querySelectorAll('img');
+  const noteImg = noteImgs[1]; // Second img is noteImg
 
   if (known) {
+    if (noteImg) noteImg.style.display = 'inline';
     noteBtn.style.display = 'inline';
     saveLabel.style.display = 'none';
     translateLabel.style.display = 'none';
     saveIcon.style.display = 'none';
   } else {
+    if (noteImg) noteImg.style.display = 'none';
     noteBtn.style.display = 'none';
     saveLabel.style.display = 'inline';
     translateLabel.style.display = 'inline';

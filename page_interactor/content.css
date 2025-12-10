@@ -84,6 +84,10 @@
   font-size: 13px;
 }
 
+.note-cat {
+  cursor: pointer;
+}
+
 #vocab-bubble .btn-translate {
   min-width: 34px;
   padding: 0 8px;
@@ -148,7 +152,9 @@
 /* ===== Toast ===== */
 #vocab-toast {
   position: fixed;
-  z-index: 2147483647;
+  bottom: 30px;
+  right: 30px;
+  z-index: 2147483646;
   background: linear-gradient(135deg, #1f2937 0%, #111827 100%);
   color: #f9fafb;
   padding: 24px 32px;

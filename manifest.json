@@ -10,11 +10,15 @@
   },
   "permissions": [
     "storage",
-    "tabs"
+    "tabs",
+    "activeTab"
   ],
   "host_permissions": [
     "https://translation.googleapis.com/*"
   ],
+  "background": {
+    "service_worker": "background.js"
+  },
   "action": {
     "default_popup": "board/dashBoard.html",
     "default_icon": "img/logo.png"
@@ -31,7 +35,7 @@
       "css": [
         "page_interactor/content.css"
       ],
-      "run_at": "document_idle",
+      "run_at": "document_end",
       "all_frames": true
     }
   ],
@@ -41,7 +45,10 @@
         "img/*.png",
         "Quiz/quiz.html",
         "Quiz/quiz.js",
-        "Quiz/quiz.css"
+        "Quiz/quiz.css",
+        "welcome/welcome.html",
+        "welcome/welcome.css",
+        "welcome/welcome.js"
       ],
       "matches": [
         "<all_urls>"
